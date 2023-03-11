@@ -10,6 +10,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Security vulnerabilities scan
+        uses: aufdenpunkt/python-safety-check@master
       - name: Deploy
         env:
           HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
