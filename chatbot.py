@@ -34,6 +34,7 @@ def main():
 
     # add up functions
     dispatcher.add_handler(CommandHandler('ask', ask))
+    dispatcher.add_handler(CommandHandler('reset', reset))
 
     # To start the bot:
     updater.start_polling()
@@ -88,6 +89,19 @@ def ask(update: Update, msg: CallbackContext) -> None:
     reply = result['choices'][0]['message']['content']
     user_conversations[user_id]['history'].append({'role': 'assistant', 'content': reply})
     logging.info("GPT: " + reply)
+    update.message.reply_text(reply)
+
+def reset(update: Update, msg: CallbackContext):
+
+    global user_conversations
+    user_id = update.effective_chat.id
+    reply = ""
+    if user_id in user_conversations:
+        del user_conversations[user_id]
+        reply = "已经重置了历史对话, 开启新一轮对话吧!"
+    else:
+        reply = "似乎没有历史对话捏, 无需重置"
+
     update.message.reply_text(reply)
 
 def hello(update: Update, msg: CallbackContext):
