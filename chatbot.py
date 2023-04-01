@@ -3,6 +3,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,Callba
 import configparser
 import logging
 import redis
+import requests
+import json
 global redis1
 
 import os
@@ -37,8 +39,21 @@ def main():
     updater.idle()
 
 def ask(update: Update, msg: CallbackContext):
-    logging.info(msg.args[0])
-    update.message.reply_text(str('好问题！'))
+    url = "https://chatgpt-api.shn.hk/v1/"
+    headers = {"Content-Type": "application/json",
+               "User-Agent": "PostmanRuntime/7.31.3"
+               }
+    data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": "Are you GPT4?"}]
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    result = json.loads(response.content.strip())
+    rply = result['choices'][0]['message']['content']
+
+    logging.info("Ask: " + msg.args[0])
+    logging.info("GPT: " + rply)
+    update.message.reply_text(str(rply))
 
 def hello(update: Update, msg: CallbackContext):
     logging.info(msg.args[0])
