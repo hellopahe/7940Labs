@@ -29,10 +29,16 @@ def main():
     # writeup on FEB 14 2023
     dispatcher.add_handler(CommandHandler('hello', hello))
 
+    # add up functions
+    dispatcher.add_handler(CommandHandler('ask', ask))
+
     # To start the bot:
     updater.start_polling()
     updater.idle()
 
+def ask(update: Update, msg: CallbackContext):
+    logging.info(msg.args[0])
+    update.message.reply_text(str('好问题！'))
 
 def hello(update: Update, msg: CallbackContext):
     logging.info(msg.args[0])
