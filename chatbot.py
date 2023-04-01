@@ -42,6 +42,9 @@ def main():
 
 
 def ask(update: Update, msg: CallbackContext) -> None:
+    if len(msg.args) < 1:
+        update.message.reply_text("你好像没有输入问题内容捏, 示例: /ask 能不能给我喵一个？")
+        return
     user_id = update.effective_chat.id
     user_message = msg.args[0]
     logging.info("user Id: " + str(user_id) + " User Ask: " + user_message)
