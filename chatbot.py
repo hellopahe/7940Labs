@@ -45,7 +45,7 @@ def ask(update: Update, msg: CallbackContext):
                }
     data = {
         "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": "Are you GPT4?"}]
+        "messages": [{"role": "user", "content": msg.args[0]}]
     }
     response = requests.post(url, headers=headers, data=json.dumps(data))
     result = json.loads(response.content.strip())
@@ -54,6 +54,7 @@ def ask(update: Update, msg: CallbackContext):
     logging.info("Ask: " + msg.args[0])
     logging.info("GPT: " + rply)
     update.message.reply_text(str(rply))
+    # update.message.reply_text(str('Good day, ' + rply + '!'))
 
 def hello(update: Update, msg: CallbackContext):
     logging.info(msg.args[0])
