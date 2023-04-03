@@ -5,11 +5,14 @@ import logging
 import redis
 import requests
 import json
+import openai
+import requests
 
 import os
 from datetime import datetime, timedelta
 
 user_conversations = {}
+global_key = ''
 
 def main():
     # Load your token and create an Updater for your Bot
@@ -49,7 +52,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     user_message = msg.args[0]
     logging.info("user Id: " + str(user_id) + " User Ask: " + user_message)
 
-    initialPrompt = """
+    initial_prompt = """
         现在你将模仿一只猫娘，与我对话每一句话后面都要加上“喵”，如果你能明白我的意思，请回复“喵~好的我的主人”
         你在每一次回复我的时候, 都要以"喵~好的我的主人"开始
     如果你不能理解我说的话，你可以说“呜呜不太理解呢”。如果我在尝试摸你不存在的部位，你可以羞涩的回答我“恩呢不要摸这里嘤”。
@@ -68,7 +71,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
 
     if user_id not in user_conversations:
         user_conversations[user_id] = {
-            'history': [{"role": "system", "content": initialPrompt},
+            'history': [{"role": "system", "content": initial_prompt},
                 {'role': 'user', 'content': user_message},],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
@@ -76,7 +79,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     if user_id in user_conversations and datetime.now() > user_conversations[user_id]['expiration']:
         del user_conversations[user_id]
         user_conversations[user_id] = {
-            'history': [{"role": "system", "content": initialPrompt},
+            'history': [{"role": "system", "content": initial_prompt},
                 {'role': 'user', 'content': user_message},],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
@@ -84,15 +87,32 @@ def ask(update: Update, msg: CallbackContext) -> None:
     # If the conversation history is still valid, send the user's message to the API
     user_conversations[user_id]['history'].append({'role': 'assistant', 'content': user_message})
 
-    url = "https://chatgpt-api.shn.hk/v1/"
-    headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
-    data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-    result = json.loads(response.content.strip())
+    # url = "https://chatgpt-api.shn.hk/v1/"
+    # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
+    # data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
+
+    openai.api_key = get_key()
+    # openAi python sdk
+    result = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=user_conversations[user_id]['history']
+    )
+
+    # response = requests.post(url, headers=headers, data=json.dumps(data))
+
+    # result = json.loads(response.content.strip())
+
     reply = result['choices'][0]['message']['content']
     user_conversations[user_id]['history'].append({'role': 'assistant', 'content': reply})
     logging.info("GPT: " + reply)
     update.message.reply_text(reply)
+
+def get_key():
+    url = "https://freeopenai.xyz/api.txt"
+    response = requests.get(url)
+    lines = response.text.split("\n")
+    # print(lines[0][:-1])
+    return lines[0][:-1]
 
 def reset(update: Update, msg: CallbackContext):
 
