@@ -1,18 +1,15 @@
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters,CallbackContext
-import configparser
 import logging
-import redis
-import requests
-import json
-import openai
-import requests
-
 import os
 from datetime import datetime, timedelta
 
+import openai
+import redis
+import requests
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
 user_conversations = {}
-global_key = ''
+
 
 def main():
     # Load your token and create an Updater for your Bot
@@ -48,8 +45,12 @@ def ask(update: Update, msg: CallbackContext) -> None:
     if len(msg.args) < 1:
         update.message.reply_text("你好像没有输入问题内容捏, 示例: /ask 能不能给我喵一个？")
         return
+    query = ''
+    for ele in msg.args:
+        query += ele
+
     user_id = update.effective_chat.id
-    user_message = msg.args[0]
+    user_message = query
     logging.info("user Id: " + str(user_id) + " User Ask: " + user_message)
 
     initial_prompt = """
@@ -72,7 +73,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     if user_id not in user_conversations:
         user_conversations[user_id] = {
             'history': [{"role": "system", "content": initial_prompt},
-                {'role': 'user', 'content': user_message},],
+                        {'role': 'user', 'content': user_message}, ],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
 
@@ -80,7 +81,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
         del user_conversations[user_id]
         user_conversations[user_id] = {
             'history': [{"role": "system", "content": initial_prompt},
-                {'role': 'user', 'content': user_message},],
+                        {'role': 'user', 'content': user_message}, ],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
 
@@ -107,6 +108,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     logging.info("GPT: " + reply)
     update.message.reply_text(reply)
 
+
 def get_key():
     url = "https://freeopenai.xyz/api.txt"
     response = requests.get(url)
@@ -114,8 +116,8 @@ def get_key():
     # print(lines[0][:-1])
     return lines[0][:-1]
 
-def reset(update: Update, msg: CallbackContext):
 
+def reset(update: Update, msg: CallbackContext):
     global user_conversations
     user_id = update.effective_chat.id
     reply = ""
@@ -127,6 +129,7 @@ def reset(update: Update, msg: CallbackContext):
 
     update.message.reply_text(reply)
 
+
 def hello(update: Update, msg: CallbackContext):
     logging.info(msg.args[0])
     update.message.reply_text(str('Good day, ' + msg.args[0] + '!'))
@@ -136,7 +139,7 @@ def echo(update, context):
     reply_message = update.message.text.upper()
     logging.info("Update: " + str(update))
     logging.info("context: " + str(context))
-    context.bot.send_message(chat_id=update.effective_chat.id, text= reply_message)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
 
 
 # Define a few command handlers. These usually take the two arguments update and
@@ -151,7 +154,7 @@ def add(update: Update, context: CallbackContext) -> None:
     try:
         global redis1
         logging.info(context.args[0])
-        msg = context.args[0] # /add keyword <-- this should store the keyword
+        msg = context.args[0]  # /add keyword <-- this should store the keyword
         redis1.incr(msg)
         update.message.reply_text('You have said ' + msg + ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
     except (IndexError, ValueError):
