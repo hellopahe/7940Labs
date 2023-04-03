@@ -9,6 +9,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
 user_conversations = {}
+api_key = ''
 
 
 def main():
@@ -39,6 +40,7 @@ def main():
     # To start the bot:
     updater.start_polling()
     updater.idle()
+    set_key(0)
 
 
 def ask(update: Update, msg: CallbackContext) -> None:
@@ -92,7 +94,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
     # data = {"model": "gpt-3.5-turbo", "messages": user_conversations[user_id]['history']}
 
-    openai.api_key = get_key()
+    openai.api_key = api_key
     # openAi python sdk
     result = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -117,6 +119,16 @@ def get_key():
     return lines[0][:-1]
 
 
+def set_key(n):
+    global api_key
+    url = "https://freeopenai.xyz/api.txt"
+    response = requests.get(url)
+    lines = response.text.split("\n")
+    # print(lines[0][:-1])
+    # return lines[0][:-1]
+    api_key = lines[n][:-1]
+
+
 def reset(update: Update, msg: CallbackContext):
     global user_conversations
     user_id = update.effective_chat.id
@@ -128,6 +140,11 @@ def reset(update: Update, msg: CallbackContext):
         reply = "似乎没有历史对话捏, 无需重置"
 
     update.message.reply_text(reply)
+
+
+def set_key(update: Update, msg: CallbackContext):
+    set_key(int(msg[0]))
+    update.message.reply_text('成功')
 
 
 def hello(update: Update, msg: CallbackContext):
