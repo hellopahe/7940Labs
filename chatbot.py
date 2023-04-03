@@ -73,7 +73,7 @@ def ask(update: Update, msg: CallbackContext) -> None:
     if user_id not in user_conversations:
         user_conversations[user_id] = {
             'history': [{"role": "system", "content": initial_prompt},
-                        {'role': 'user', 'content': user_message}, ],
+                        ],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
 
@@ -81,12 +81,12 @@ def ask(update: Update, msg: CallbackContext) -> None:
         del user_conversations[user_id]
         user_conversations[user_id] = {
             'history': [{"role": "system", "content": initial_prompt},
-                        {'role': 'user', 'content': user_message}, ],
+                        ],
             'expiration': datetime.now() + timedelta(minutes=10)
         }
 
     # If the conversation history is still valid, send the user's message to the API
-    user_conversations[user_id]['history'].append({'role': 'assistant', 'content': user_message})
+    user_conversations[user_id]['history'].append({'role': 'user', 'content': user_message})
 
     # url = "https://chatgpt-api.shn.hk/v1/"
     # headers = {"Content-Type": "application/json", "User-Agent": "PostmanRuntime/7.31.3"}
