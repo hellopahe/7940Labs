@@ -57,7 +57,7 @@ else:
 def update_user_info(user_id, user_nickname):
     now = datetime.datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
-    query = "INSERT INTO User_info_test (user_id, user_nickname, user_last_active) " \
+    query = "INSERT INTO User_info_test_1 (user_id, user_nickname, user_last_active) " \
             "VALUES (%s, %s, %s) " \
             "ON DUPLICATE KEY UPDATE " \
             "user_nickname = VALUES(user_nickname), " \
@@ -170,7 +170,7 @@ def button_callback(update, context):
         movie_id = context.user_data['recommended']
         #
         # print(movie_id)
-        sql_query = "INSERT INTO User_favorite_test (user_id, movie_id) " \
+        sql_query = "INSERT INTO User_favorite_test_1 (user_id, movie_id) " \
                 "VALUES (%s, %s) " \
                 "ON DUPLICATE KEY UPDATE user_id = user_id"
         values = (user_id, movie_id)
@@ -217,7 +217,7 @@ def button_callback(update, context):
 # 从用户收藏的电影中随机返回一个
 def get(update, context):
     user_id = update.effective_user.id
-    query = "SELECT movie_id FROM User_favorite_test WHERE user_id = %s ORDER BY RAND() LIMIT 3"
+    query = "SELECT movie_id FROM User_favorite_test_1 WHERE user_id = %s ORDER BY RAND() LIMIT 3"
     values = (user_id,)
     cursor.execute(query, values)
     result = cursor.fetchall()
