@@ -36,11 +36,14 @@ def main():
     # add up functions
     dispatcher.add_handler(CommandHandler('ask', ask))
     dispatcher.add_handler(CommandHandler('reset', reset))
+    dispatcher.add_handler(CommandHandler('setkey', set_key_handler))
+
+    # initialize key
+    set_key(0)
 
     # To start the bot:
     updater.start_polling()
     updater.idle()
-    set_key(0)
 
 
 def ask(update: Update, msg: CallbackContext) -> None:
@@ -142,8 +145,8 @@ def reset(update: Update, msg: CallbackContext):
     update.message.reply_text(reply)
 
 
-def set_key(update: Update, msg: CallbackContext):
-    set_key(int(msg[0]))
+def set_key_handler(update: Update, msg: CallbackContext):
+    set_key(int(msg.args[0]))
     update.message.reply_text('成功')
 
 
