@@ -173,7 +173,7 @@ def director_query(update, context):
 ## User profile management
 def sql_update_user_info(user_id, user_nickname):
     pingsql()
-    now = datetime.now()
+    now = datetime.datetime.now()
     timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
     query = "INSERT INTO User_info_test_1 (user_id, user_nickname, user_last_active) " \
             "VALUES (%s, %s, %s) " \
