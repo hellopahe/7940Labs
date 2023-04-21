@@ -7,3 +7,5 @@ requests
 openai
 mysql-connector-python
 flask
+flask_cors
+pymongo

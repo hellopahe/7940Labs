@@ -1,7 +1,7 @@
 import random, requests, openai, threading, logging, os, re, datetime, signal
-import mysql.connector
+# import mysql.connector
 import pymongo
-from mysql.connector import errorcode
+# from mysql.connector import errorcode
 from datetime import timedelta, datetime
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
