@@ -11,6 +11,6 @@ flask_cors
 pymongo
 scikit-learn
 flask
-scikit-surprise==1.0.4
+scikit-surprise
 surprise
 pandas

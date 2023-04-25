@@ -166,6 +166,7 @@ def main():
     dp.add_handler(CommandHandler('get', genres))
     dp.add_handler(CommandHandler('build', build))
 
+
     dp.add_handler(CallbackQueryHandler(button, pattern=re.compile(r'^user_.*')))
     dp.add_handler(CallbackQueryHandler(add_to_fav, pattern=re.compile(r'^fav_.*')))
     dp.add_handler(CallbackQueryHandler(movie_button, pattern=re.compile(r'^movie_.*')))
